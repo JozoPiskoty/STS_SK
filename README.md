@@ -135,7 +135,7 @@ python analyze_correlation.py
 Best experimental configuration achieved approximately:
 
 ```text
-Pearson ≈ 0.57
+Pearson ≈ 0.5579
 ```
 
 using:
