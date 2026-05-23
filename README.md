@@ -41,7 +41,6 @@ pearson_results_final_final.csv
 
 concept_cache.json
 lemma_cache.json
-missing_lemmas.csv
 ```
 
 ## Similarity Metrics
