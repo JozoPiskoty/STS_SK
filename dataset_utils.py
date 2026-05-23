@@ -1,0 +1,92 @@
+from sklearn.model_selection import train_test_split
+
+def load_dataset(dataset):     
+    data = []
+    with open(dataset,"r",encoding = "utf-8-sig") as file:
+        for line in file:
+            line = line.strip().split("\t")
+            data.append((line[1],line[2],float(line[0])))
+    return data
+
+def count_names(row):
+    count = 0
+
+    sentence1 = row[0].split()[1:]
+    sentence2 = row[1].split()[1:]
+
+    for word in sentence1:
+        if word[0].isupper():
+            count += 1
+
+    for word in sentence2:
+        if word[0].isupper():
+            count += 1
+
+    return count
+    
+def count_words(row):
+    return len(row[0].split()) + len(row[1].split())
+
+def get_score_bucket(row):
+    score = row[2]
+
+    if score < 1:
+        return 1
+
+    elif score < 2:
+        return 2
+
+    elif score < 3:
+        return 3
+
+    elif score < 4:
+        return 4
+
+    return 5
+
+def get_name_bucket(row):
+    names = count_names(row)
+
+    if names == 0:
+        return 0
+
+    elif names == 1:
+        return 1
+
+    return 2
+
+def get_length_bucket(row):
+    words = count_words(row)
+
+    if words < 15:
+        return "short"
+
+    elif words < 25:
+        return "medium"
+
+    return "long"
+
+def stratified_split(dataset):
+
+    labels = []
+
+    for row in dataset:
+
+        label = (
+            str(get_score_bucket(row))
+            + "_"
+            + get_length_bucket(row)
+            + "_"
+            + str(get_name_bucket(row))
+        )
+
+        labels.append(label)
+
+    train_data, test_data = train_test_split(
+        dataset,
+        test_size=0.2,
+        random_state=1,
+        stratify=labels
+    )
+
+    return train_data, test_data
