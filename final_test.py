@@ -1,4 +1,10 @@
-from scipy.stats import pearsonr
+from scipy.stats import pearsonr, spearmanr, kendalltau
+
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
+
+import numpy as np
 
 from api_utils import get_sentence_lemmas
 from api_utils import build_tree_from_concepts
@@ -44,6 +50,33 @@ for i, (veta1, veta2, skore) in enumerate(test_data):
     model_scores.append(sim)
     human_scores.append(skore)
 
-r = pearsonr(human_scores, model_scores)[0]
+scaled_model_scores = [1 + s * 4 for s in model_scores]
 
-print("Final Pearson:", r)
+pearson = pearsonr(human_scores, model_scores)[0]
+spearman = spearmanr(human_scores, model_scores)[0]
+kendall = kendalltau(human_scores, model_scores)[0]
+
+mae = mean_absolute_error(human_scores, scaled_model_scores)
+
+mse = mean_squared_error(human_scores, scaled_model_scores)
+rmse = np.sqrt(mse)
+
+mape = np.mean(
+    np.abs(
+        (np.array(human_scores) - np.array(scaled_model_scores))
+        / np.array(human_scores)
+    )
+) * 100
+
+r2 = r2_score(human_scores, scaled_model_scores)
+
+print("Pearson:", pearson)
+print("Spearman:", spearman)
+print("Kendall Tau:", kendall)
+
+print("MAE:", mae)
+print("MSE:", mse)
+print("RMSE:", rmse)
+print("MAPE:", mape)
+
+print("R2:", r2)
